@@ -31,32 +31,86 @@
       </ul>
       <p>Task list.</p>
     </div>
+
+    <div class="holder">
+      <ul>
+        <transition-group
+          name="list"
+          enter-active-class="animated bounceInUp"
+          leave-active-class="animated bounceOutDown"
+        >
+          <li v-for="(data, index) in doneTasks" :key="index">
+            {{doneTasks[index]}}
+            <span id="xMark" v-on:click="removeDoneTask(index)">X</span>
+          </li>
+        </transition-group>
+      </ul>
+      <p>YOU DID IT!</p>
+    </div>
   </div>
 </template>
 
 <script>
+import { debuglog } from "util";
 export default {
   name: "PostExample",
   data() {
     return {
       checked: false,
       task: "",
-      tasks: [{ task: "Learn." }, { task: "Learn more." }]
+      tasks: [],
+      doneTask: "",
+      doneTasks: []
     };
+  },
+  mounted() {
+    if (localStorage.getItem("tasks")) {
+      try {
+        this.tasks = JSON.parse(localStorage.getItem("tasks"));
+      } catch (e) {
+        localStorage.removeItem("tasks");
+      }
+    }
+    if (localStorage.getItem("doneTasks")) {
+      try {
+        this.doneTasks = JSON.parse(localStorage.getItem("doneTasks"));
+      } catch (e) {
+        localStorage.removeItem("doneTasks");
+      }
+    }
   },
   methods: {
     addTask() {
       this.$validator.validateAll().then(result => {
-        if (result && this.task != "") {
+        if (result && this.task !== "") {
           this.tasks.push({ task: this.task });
           this.task = "";
+          this.saveTasks();
         } else {
           console.log("not valid");
         }
       });
     },
+
     removeTask(id) {
+      this.doneTasks.push(this.tasks[id].task);
       this.tasks.splice(id, 1);
+      this.saveTasks();
+      this.saveDoneTasks();
+    },
+
+    removeDoneTask(id) {
+      this.doneTasks.splice(id, 1);
+      this.saveDoneTasks();
+      this.saveTasks();
+    },
+    saveTasks() {
+      const parsed = JSON.stringify(this.tasks);
+      localStorage.setItem("tasks", parsed);
+    },
+    saveDoneTasks() {
+      const parsed = JSON.stringify(this.doneTasks);
+      localStorage.setItem("doneTasks", parsed);
     }
   }
 };

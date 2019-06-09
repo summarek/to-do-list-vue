@@ -6,12 +6,13 @@
 </template>
 
 <script>
-import PostExample from "./components/Posts.vue";
+import PostExample from './components/Posts.vue';
+
 export default {
-  name: "app",
+  name: 'app',
   components: {
-    PostExample
-  }
+    PostExample,
+  },
 };
 </script>
 <style>
@@ -37,5 +38,3 @@ h1 {
   text-align: center;
 }
 </style>
-
-
