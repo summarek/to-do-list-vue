@@ -6,15 +6,16 @@
 </template>
 
 <script>
-import PostExample from './components/Posts.vue';
+import PostExample from "./components/Posts.vue";
 
 export default {
-  name: 'app',
+  name: "app",
   components: {
-    PostExample,
-  },
+    PostExample
+  }
 };
 </script>
+
 <style>
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
 
@@ -32,9 +33,37 @@ html {
   height: 100%;
 }
 #app {
-  width: 50%;
+  width: 70%;
 }
 h1 {
   text-align: center;
+}
+@media only screen and (max-width: 500px) {
+  #app {
+    width: 100%;
+  }
+  small {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 6px;
+    padding-left: 26px;
+
+    color: rgba(0, 0, 0, 0.432);
+  }
+  ul li {
+    position: relative;
+  }
+}
+@media only screen and (max-width: 768px) {
+  #app {
+    width: 90%;
+  }
+}
+
+@media only screen and (max-width: 1268px) {
+  #app {
+    width: 80%;
+  }
 }
 </style>
