@@ -27,6 +27,7 @@
           leave-active-class="animated bounceOutDown"
         >
           <li v-for="(data, index) in tasks" :key="index">
+            <small>{{dateCallTime[index]}}</small>
             {{data.task}}
             <span id="xMark" v-on:click="removeTask(index)">DONE</span>
           </li>
@@ -61,6 +62,7 @@ export default {
   data() {
     return {
       dateTime: [],
+      dateCallTime: [],
       task: "",
       tasks: [],
       doneTask: "",
@@ -90,6 +92,13 @@ export default {
         localStorage.removeItem("dateTime");
       }
     }
+    if (localStorage.getItem("dateCallTime")) {
+      try {
+        this.dateCallTime = JSON.parse(localStorage.getItem("dateCallTime"));
+      } catch (e) {
+        localStorage.removeItem("dateCallTime");
+      }
+    }
   },
   methods: {
     addTask() {
@@ -97,7 +106,13 @@ export default {
         if (result && this.task !== "") {
           this.tasks.push({ task: this.task });
           this.task = "";
+          var w = moment().format("DD/MM/YYYY HH:mm");
+          console.log(w);
+          this.dateCallTime.push(w);
+          this.saveCallDate;
+          this.saveDate();
           this.saveTasks();
+          this.saveCallDate();
         } else {
           console.log("not valid");
         }
@@ -111,6 +126,8 @@ export default {
       this.saveDate();
       this.doneTasks.push(this.tasks[id].task);
       this.tasks.splice(id, 1);
+      this.dateCallTime.splice(id, 1);
+      this.saveCallDate();
       this.saveTasks();
       this.saveDoneTasks();
     },
@@ -134,15 +151,21 @@ export default {
       const parsed = JSON.stringify(this.doneTasks);
       localStorage.setItem("doneTasks", parsed);
     },
+    saveCallDate() {
+      const parsed = JSON.stringify(this.dateCallTime);
+      localStorage.setItem("dateCallTime", parsed);
+    },
     resetAll() {
       this.dateTime = [];
       this.task = "";
       this.tasks = [];
       this.doneTask = "";
       this.doneTasks = [];
+      this.dateCallTime = [];
       this.saveDate();
       this.saveDoneTasks();
       this.saveTasks();
+      this.saveCallDate();
     }
   }
 };
@@ -173,7 +196,8 @@ ul li {
 
 p {
   text-align: center;
-  padding: 30px 0;
+  padding: 15px 0;
+  font-weight: 700;
   color: gray;
 }
 
