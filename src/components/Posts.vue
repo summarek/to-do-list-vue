@@ -11,7 +11,7 @@
           v-model="task"
           v-validate="'min:5'"
           name="task"
-        >
+        />
         <transition
           name="alert-in"
           enter-active-class="animated flipInX"
@@ -43,10 +43,14 @@
           enter-active-class="animated bounceInUp"
           leave-active-class="animated bounceOutDown"
         >
-          <li class="date" v-for="(data, index) in doneTasks" :key="index">
+          <li class="date colorized" v-for="(data, index) in doneTasks" :key="index">
             <small>{{dateTime[index]}}</small>
-            {{doneTasks[index]}}
-            <span id="xMark" v-on:click="removeDoneTask(index)">X</span>
+            {{data.task}}
+            <span
+              id="xMark"
+              class="xMarkColor"
+              v-on:click="removeDoneTask(index)"
+            >X</span>
           </li>
         </transition-group>
       </ul>
@@ -66,7 +70,9 @@ export default {
       task: "",
       tasks: [],
       doneTask: "",
-      doneTasks: []
+      doneTasks: [],
+      launchDate: "",
+      lastLaunchDate: ""
     };
   },
   mounted() {
@@ -84,7 +90,6 @@ export default {
         localStorage.removeItem("doneTasks");
       }
     }
-
     if (localStorage.getItem("dateTime")) {
       try {
         this.dateTime = JSON.parse(localStorage.getItem("dateTime"));
@@ -99,6 +104,49 @@ export default {
         localStorage.removeItem("dateCallTime");
       }
     }
+    if (localStorage.getItem("lastLaunchDate")) {
+      try {
+        this.lastLaunchDate = JSON.parse(
+          localStorage.getItem("lastLaunchDate")
+        );
+      } catch (e) {
+        localStorage.removeItem("lastLaunchDate");
+      }
+    }
+
+    this.launchDate = moment().format("DD MM");
+
+    console.log(this.lastLaunchDate);
+
+    if (
+      parseInt(this.launchDate[0] + this.launchDate[1]) >
+        parseInt(this.lastLaunchDate[0] + this.lastLaunchDate[1]) ||
+      parseInt(this.launchDate[3] + this.launchDate[4]) >
+        parseInt(this.lastLaunchDate[3] + this.lastLaunchDate[4])
+    ) {
+      localStorage.removeItem("dateCallTime");
+      localStorage.removeItem("dateTime");
+      localStorage.removeItem("doneTasks");
+      if (this.tasks.length > 0) {
+        alert(
+          "WCZORAJ NIE ZROBIŁEłEŚ TEGO: " +
+            this.tasks.map(function(item) {
+              return " " + item["task"];
+            })
+        );
+      } else {
+        alert("WCZORAJ ZROBIŁEŚ WSZYSTKIE ZADANIA! TAK TRZYMAJ!");
+      }
+      this.tasks = this.doneTasks;
+      this.dateTime = [];
+      this.task = "";
+      this.doneTask = "";
+      this.doneTasks = [];
+      this.dateCallTime = [];
+    }
+    this.lastLaunchDate = this.launchDate;
+    this.saveLaunchDate();
+    console.log(this.launchDate);
   },
   methods: {
     addTask() {
@@ -106,7 +154,7 @@ export default {
         if (result && this.task !== "") {
           this.tasks.push({ task: this.task });
           this.task = "";
-          var w = moment().format("DD/MM/YYYY HH:mm");
+          var w = moment().format("HH:mm");
           console.log(w);
           this.dateCallTime.push(w);
           this.saveCallDate;
@@ -120,11 +168,11 @@ export default {
     },
 
     removeTask(id) {
-      var m = moment().format("DD/MM/YYYY HH:mm");
+      var m = moment().format("HH:mm");
       console.log(m);
       this.dateTime.push(m);
       this.saveDate();
-      this.doneTasks.push(this.tasks[id].task);
+      this.doneTasks.push(this.tasks[id]);
       this.tasks.splice(id, 1);
       this.dateCallTime.splice(id, 1);
       this.saveCallDate();
@@ -154,6 +202,10 @@ export default {
     saveCallDate() {
       const parsed = JSON.stringify(this.dateCallTime);
       localStorage.setItem("dateCallTime", parsed);
+    },
+    saveLaunchDate() {
+      const parsed = JSON.stringify(this.lastLaunchDate);
+      localStorage.setItem("lastLaunchDate", parsed);
     },
     resetAll() {
       this.dateTime = [];
@@ -192,6 +244,10 @@ ul li {
   border-left: 5px solid #3eb3f6;
   margin-bottom: 2px;
   color: #3e5252;
+}
+.colorized {
+  background-image: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+  border-left: 5px solid #f7633a;
 }
 
 p {
@@ -248,6 +304,13 @@ input {
   color: white;
   border-radius: 5px;
   background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+}
+.xMarkColor {
+  background-image: linear-gradient(
+    to right,
+    #ff4e50 0%,
+    #f9d423 100%
+  ) !important;
 }
 </style>
 <style lang="scss" scoped>
