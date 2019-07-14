@@ -28,7 +28,8 @@
         >
           <li v-for="(data, index) in tasks" :key="index">
             <small>{{dateCallTime[index]}}</small>
-            {{data.task}}
+            {{index+1}}.
+            <i>{{data.task}}</i>
             <span id="xMark" v-on:click="removeTask(index)">DONE</span>
           </li>
         </transition-group>
@@ -45,12 +46,9 @@
         >
           <li class="date colorized" v-for="(data, index) in doneTasks" :key="index">
             <small>{{dateTime[index]}}</small>
-            {{data.task}}
-            <span
-              id="xMark"
-              class="xMarkColor"
-              v-on:click="removeDoneTask(index)"
-            >X</span>
+            {{index+1}}.
+            <i>{{data.task}}</i>
+            <span id="xMark" class="xMarkColor" v-on:click="removeDoneTask(index)">X</span>
           </li>
         </transition-group>
       </ul>
@@ -226,7 +224,7 @@ export default {
 <style scoped>
 @import "https://cdn.jsdelivr.net/npm/animate.css@3.5.1";
 .holder {
-  background: #fff;
+  background-image: linear-gradient(to right, #74ebd5 0%, #9face6 100%);
 }
 
 ul {
@@ -240,6 +238,7 @@ ul li {
   line-break: auto;
   word-break: break-all;
   font-size: 1.3em;
+  font-weight: 700;
   background-color: #e0edf4;
   border-left: 5px solid #3eb3f6;
   margin-bottom: 2px;
@@ -254,7 +253,7 @@ p {
   text-align: center;
   padding: 15px 0;
   font-weight: 700;
-  color: gray;
+  color: rgb(226, 226, 226);
 }
 
 .container {
@@ -283,6 +282,9 @@ input {
 }
 .alert-in-leave-active {
   animation: bounce-in 0.5s reverse;
+}
+small {
+  font-weight: 500;
 }
 
 @keyframes bounce-in {
